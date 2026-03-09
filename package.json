@@ -1,0 +1,34 @@
+{
+  "name": "@philiprehberger/ts-logger",
+  "version": "0.1.0",
+  "description": "Structured JSON logger with child loggers, redaction, and pretty dev output",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": ["logger", "logging", "structured", "json", "typescript", "redaction"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/philiprehberger/ts-logger.git" },
+  "homepage": "https://github.com/philiprehberger/ts-logger#readme",
+  "bugs": { "url": "https://github.com/philiprehberger/ts-logger/issues" },
+  "author": "Philip Rehberger",
+  "engines": { "node": ">=18.0.0" },
+  "sideEffects": false
+}
