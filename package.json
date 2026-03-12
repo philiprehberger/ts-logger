@@ -1,6 +1,6 @@
 {
   "name": "@philiprehberger/ts-logger",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Structured JSON logger with child loggers, redaction, and pretty dev output",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -25,6 +25,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
+    "test": "node --test src/__tests__/index.test.mjs",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

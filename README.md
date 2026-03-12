@@ -25,9 +25,9 @@ logger.error('Request failed', { status: 500, path: '/api/users' });
 
 ### Log Levels
 
-`trace` → `debug` → `info` → `warn` → `error` → `fatal`
+`trace` → `debug` → `info` → `warn` → `error` → `fatal` → `silent`
 
-Messages below the configured level are silently dropped.
+Messages below the configured level are silently dropped. Use `silent` to disable all output (useful in tests).
 
 ### Child Loggers
 
@@ -77,8 +77,19 @@ const logger = createLogger({ name: 'app', pretty: true });
 
 ### Environment Variables
 
-- `LOG_LEVEL` — sets the log level (overrides constructor option)
+- `LOG_LEVEL` — sets the log level (overrides constructor option, case-insensitive)
 - `NODE_ENV=development` — enables pretty mode by default
+
+### Custom Colors
+
+```ts
+import { consoleTransport } from '@philiprehberger/ts-logger';
+
+const transport = consoleTransport({
+  pretty: true,
+  colors: { error: '\x1b[41m', info: '\x1b[36m' },
+});
+```
 
 ## License
 

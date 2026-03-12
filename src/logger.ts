@@ -64,7 +64,11 @@ export function createLogger(options: LoggerOptions): Logger {
     };
 
     for (const transport of transports) {
-      transport(entry);
+      try {
+        transport(entry);
+      } catch {
+        /* transport errors must not crash the app or block other transports */
+      }
     }
   }
 

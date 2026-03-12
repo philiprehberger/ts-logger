@@ -1,4 +1,4 @@
-export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | 'silent';
 
 export const LOG_LEVELS: Record<LogLevel, number> = {
   trace: 10,
@@ -7,6 +7,7 @@ export const LOG_LEVELS: Record<LogLevel, number> = {
   warn: 40,
   error: 50,
   fatal: 60,
+  silent: 70,
 };
 
 export interface LogEntry {
