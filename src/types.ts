@@ -36,4 +36,5 @@ export interface Logger {
   error(msg: string, data?: Record<string, unknown>): void;
   fatal(msg: string, data?: Record<string, unknown>): void;
   child(context: Record<string, unknown>): Logger;
+  setLevel(level: LogLevel): void;
 }

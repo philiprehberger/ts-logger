@@ -60,6 +60,22 @@ const logger = createLogger({
 });
 ```
 
+Arrays are redacted recursively:
+
+```ts
+logger.info('Users', { users: [{ name: 'alice', token: 'abc' }] });
+// token is redacted inside the array element
+```
+
+Circular references are handled safely:
+
+```ts
+const obj: any = { name: 'test' };
+obj.self = obj;
+logger.info('Circular', obj);
+// self becomes "[Circular]"
+```
+
 Disable redaction:
 
 ```ts
@@ -73,6 +89,21 @@ Auto-detected in development (`NODE_ENV=development`), or set manually:
 ```ts
 const logger = createLogger({ name: 'app', pretty: true });
 // INFO  [app] Server started {"port":3000}
+```
+
+### Runtime Level Changes
+
+```ts
+const logger = createLogger({ name: 'app', level: 'info' });
+logger.debug('hidden'); // dropped
+
+logger.setLevel('debug');
+logger.debug('now visible'); // logged
+
+// Child loggers inherit the parent's level unless they set their own
+const child = logger.child({ req: '123' });
+logger.setLevel('error'); // child also uses 'error' now
+child.setLevel('debug');  // child overrides to 'debug'
 ```
 
 ### Environment Variables

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+- Add array redaction — sensitive fields inside arrays are now recursively redacted
+- Add circular reference protection — circular objects return `"[Circular]"` instead of infinite recursion
+- Add `setLevel()` method to change log level at runtime; child loggers inherit parent level unless overridden
+
 ## 0.2.0
 - Add `silent` log level to fully disable logging
 - Fix transport errors crashing the application — transports are now isolated

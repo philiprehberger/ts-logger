@@ -35,20 +35,26 @@ export function createLogger(options: LoggerOptions): Logger {
     transports = [consoleTransport(pretty)],
   } = options;
 
-  const minLevel = LOG_LEVELS[level];
+  let minLevel = LOG_LEVELS[level];
   const redactor = redact === false
     ? null
     : Array.isArray(redact)
       ? createRedactor(redact)
       : getDefaultRedactor();
 
+  function getMinLevel(): number {
+    return minLevel;
+  }
+
   function log(
     logLevel: LogLevel,
     msg: string,
     data?: Record<string, unknown>,
     context?: Record<string, unknown>,
+    levelOverride?: () => number,
   ): void {
-    if (LOG_LEVELS[logLevel] < minLevel) return;
+    const effectiveLevel = levelOverride ? levelOverride() : getMinLevel();
+    if (LOG_LEVELS[logLevel] < effectiveLevel) return;
 
     let extra: Record<string, unknown> = { ...context, ...data };
     if (redactor && Object.keys(extra).length > 0) {
@@ -72,15 +78,22 @@ export function createLogger(options: LoggerOptions): Logger {
     }
   }
 
-  function createChild(parentContext: Record<string, unknown>): Logger {
+  function createChild(parentContext: Record<string, unknown>, parentGetLevel: () => number): Logger {
+    let ownLevel: number | undefined;
+
+    function childGetLevel(): number {
+      return ownLevel ?? parentGetLevel();
+    }
+
     return {
-      trace: (msg, data) => log('trace', msg, data, parentContext),
-      debug: (msg, data) => log('debug', msg, data, parentContext),
-      info: (msg, data) => log('info', msg, data, parentContext),
-      warn: (msg, data) => log('warn', msg, data, parentContext),
-      error: (msg, data) => log('error', msg, data, parentContext),
-      fatal: (msg, data) => log('fatal', msg, data, parentContext),
-      child: (childContext) => createChild({ ...parentContext, ...childContext }),
+      trace: (msg, data) => log('trace', msg, data, parentContext, childGetLevel),
+      debug: (msg, data) => log('debug', msg, data, parentContext, childGetLevel),
+      info: (msg, data) => log('info', msg, data, parentContext, childGetLevel),
+      warn: (msg, data) => log('warn', msg, data, parentContext, childGetLevel),
+      error: (msg, data) => log('error', msg, data, parentContext, childGetLevel),
+      fatal: (msg, data) => log('fatal', msg, data, parentContext, childGetLevel),
+      child: (childContext) => createChild({ ...parentContext, ...childContext }, childGetLevel),
+      setLevel: (newLevel: LogLevel) => { ownLevel = LOG_LEVELS[newLevel]; },
     };
   }
 
@@ -91,6 +104,7 @@ export function createLogger(options: LoggerOptions): Logger {
     warn: (msg, data) => log('warn', msg, data),
     error: (msg, data) => log('error', msg, data),
     fatal: (msg, data) => log('fatal', msg, data),
-    child: (context) => createChild(context),
+    child: (context) => createChild(context, getMinLevel),
+    setLevel: (newLevel: LogLevel) => { minLevel = LOG_LEVELS[newLevel]; },
   };
 }

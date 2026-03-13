@@ -21,18 +21,30 @@ export function createRedactor(patterns: string[]): (data: Record<string, unknow
     return lowerPatterns.some((p) => lower.includes(p));
   }
 
-  function redactObject(obj: Record<string, unknown>): Record<string, unknown> {
+  function redactValue(value: unknown, seen: WeakSet<object>): unknown {
+    if (value === null || typeof value !== 'object') return value;
+
+    if (seen.has(value as object)) return '[Circular]';
+    seen.add(value as object);
+
+    if (Array.isArray(value)) {
+      return value.map((item) => redactValue(item, seen));
+    }
+
+    const obj = value as Record<string, unknown>;
     const result: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, val] of Object.entries(obj)) {
       if (shouldRedact(key)) {
         result[key] = '[REDACTED]';
-      } else if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-        result[key] = redactObject(value as Record<string, unknown>);
       } else {
-        result[key] = value;
+        result[key] = redactValue(val, seen);
       }
     }
     return result;
+  }
+
+  function redactObject(obj: Record<string, unknown>): Record<string, unknown> {
+    return redactValue(obj, new WeakSet()) as Record<string, unknown>;
   }
 
   return redactObject;
