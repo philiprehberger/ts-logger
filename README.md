@@ -1,6 +1,6 @@
 # @philiprehberger/ts-logger
 
-[![CI](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml)
+[![CI](https://github.com/philiprehberger/ts-logger/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/ts-logger/actions/workflows/publish.yml)
 [![npm version](https://img.shields.io/npm/v/@philiprehberger/ts-logger.svg)](https://www.npmjs.com/package/@philiprehberger/ts-logger)
 [![License](https://img.shields.io/github/license/philiprehberger/ts-logger)](LICENSE)
 
@@ -124,6 +124,15 @@ const transport = consoleTransport({
   pretty: true,
   colors: { error: '\x1b[41m', info: '\x1b[36m' },
 });
+```
+
+
+## Development
+
+```bash
+npm install
+npm run build
+npm test
 ```
 
 ## License

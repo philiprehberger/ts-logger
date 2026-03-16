@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.3
+
+- Add Development section to README
+- Fix CI badge to reference publish.yml
+
 ## 0.3.0
 - Add array redaction — sensitive fields inside arrays are now recursively redacted
 - Add circular reference protection — circular objects return `"[Circular]"` instead of infinite recursion

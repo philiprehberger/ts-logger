@@ -1,6 +1,6 @@
 {
   "name": "@philiprehberger/ts-logger",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Structured JSON logger with child loggers, redaction, and pretty dev output",
   "type": "module",
   "main": "./dist/index.cjs",
