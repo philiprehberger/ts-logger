@@ -1,5 +1,9 @@
 # @philiprehberger/ts-logger
 
+[![CI](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@philiprehberger/ts-logger.svg)](https://www.npmjs.com/package/@philiprehberger/ts-logger)
+[![License](https://img.shields.io/github/license/philiprehberger/ts-logger)](LICENSE)
+
 Structured JSON logger with child loggers, redaction, and pretty dev output.
 
 ## Installation
