@@ -4,7 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/@philiprehberger/ts-logger.svg)](https://www.npmjs.com/package/@philiprehberger/ts-logger)
 [![License](https://img.shields.io/github/license/philiprehberger/ts-logger)](LICENSE)
 
-Structured JSON logger with child loggers, redaction, and pretty dev output.
+Structured JSON logger with child loggers, redaction, and pretty dev output
 
 ## Installation
 
@@ -126,6 +126,39 @@ const transport = consoleTransport({
 });
 ```
 
+
+## API
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `createLogger(options)` | Function | Create a logger instance with structured JSON output |
+| `consoleTransport(options?)` | Function | Create a console transport (default); supports pretty mode and custom colors |
+| `createRedactor(patterns)` | Function | Create a custom redaction function for sensitive fields |
+| `LOG_LEVELS` | Object | Level name to numeric priority mapping |
+
+### Logger Instance Methods
+
+| Method | Description |
+|--------|-------------|
+| `trace(msg, data?)` | Log at trace level |
+| `debug(msg, data?)` | Log at debug level |
+| `info(msg, data?)` | Log at info level |
+| `warn(msg, data?)` | Log at warn level |
+| `error(msg, data?)` | Log at error level |
+| `fatal(msg, data?)` | Log at fatal level |
+| `child(bindings)` | Create a child logger with inherited context |
+| `setLevel(level)` | Change log level at runtime |
+
+### Types
+
+| Type | Description |
+|------|-------------|
+| `Logger` | Logger instance interface |
+| `LoggerOptions` | Options: `name`, `level?`, `pretty?`, `redact?`, `transport?` |
+| `LogLevel` | `'trace' \| 'debug' \| 'info' \| 'warn' \| 'error' \| 'fatal' \| 'silent'` |
+| `LogEntry` | Shape of a structured log entry |
+| `Transport` | Transport function signature |
+| `ConsoleTransportOptions` | Options for `consoleTransport` |
 
 ## Development
 
