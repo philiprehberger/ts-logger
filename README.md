@@ -1,6 +1,6 @@
 # @philiprehberger/ts-logger
 
-[![CI](https://github.com/philiprehberger/ts-logger/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/ts-logger/actions/workflows/publish.yml)
+[![CI](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@philiprehberger/ts-logger.svg)](https://www.npmjs.com/package/@philiprehberger/ts-logger)
 [![License](https://img.shields.io/github/license/philiprehberger/ts-logger)](LICENSE)
 
@@ -31,7 +31,7 @@ logger.error('Request failed', { status: 500, path: '/api/users' });
 
 `trace` → `debug` → `info` → `warn` → `error` → `fatal` → `silent`
 
-Messages below the configured level are silently dropped. Use `silent` to disable all output (useful in tests).
+Messages below the configured level are silently dropped. Use `silent` to disable all output (useful in tests)
 
 ### Child Loggers
 
