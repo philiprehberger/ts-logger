@@ -1,5 +1,5 @@
 {
-  "name": "@philiprehberger/ts-logger",
+  "name": "@philiprehberger/logger",
   "version": "0.3.3",
   "description": "Structured JSON logger with child loggers, redaction, and pretty dev output",
   "type": "module",

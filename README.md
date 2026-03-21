@@ -1,7 +1,7 @@
-# @philiprehberger/ts-logger
+# @philiprehberger/logger
 
 [![CI](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/ts-logger/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@philiprehberger/ts-logger.svg)](https://www.npmjs.com/package/@philiprehberger/ts-logger)
+[![npm version](https://img.shields.io/npm/v/@philiprehberger/logger.svg)](https://www.npmjs.com/package/@philiprehberger/logger)
 [![License](https://img.shields.io/github/license/philiprehberger/ts-logger)](LICENSE)
 
 Structured JSON logger with child loggers, redaction, and pretty dev output
@@ -9,7 +9,7 @@ Structured JSON logger with child loggers, redaction, and pretty dev output
 ## Installation
 
 ```bash
-npm install @philiprehberger/ts-logger
+npm install @philiprehberger/logger
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ npm install @philiprehberger/ts-logger
 ### Basic
 
 ```ts
-import { createLogger } from '@philiprehberger/ts-logger';
+import { createLogger } from '@philiprehberger/logger';
 
 const logger = createLogger({ name: 'api', level: 'info' });
 
@@ -118,7 +118,7 @@ child.setLevel('debug');  // child overrides to 'debug'
 ### Custom Colors
 
 ```ts
-import { consoleTransport } from '@philiprehberger/ts-logger';
+import { consoleTransport } from '@philiprehberger/logger';
 
 const transport = consoleTransport({
   pretty: true,
