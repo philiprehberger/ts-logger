@@ -20,12 +20,15 @@ export interface LogEntry {
 
 export type Transport = (entry: LogEntry) => void;
 
+export type SamplingRate = number | Partial<Record<Exclude<LogLevel, 'silent'>, number>>;
+
 export interface LoggerOptions {
   name: string;
   level?: LogLevel;
   pretty?: boolean;
   redact?: string[] | boolean;
   transports?: Transport[];
+  sampling?: SamplingRate;
 }
 
 export interface Logger {

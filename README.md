@@ -110,6 +110,47 @@ logger.setLevel('error'); // child also uses 'error' now
 child.setLevel('debug');  // child overrides to 'debug'
 ```
 
+### Sampling
+
+Reduce log volume in noisy environments by emitting only a fraction of calls. A gated call returns without writing.
+
+Single global rate (between `0` and `1`):
+
+```ts
+import { createLogger } from '@philiprehberger/logger';
+
+// Keep ~10% of all log calls
+const logger = createLogger({ name: 'app', sampling: 0.1 });
+
+logger.info('hello'); // ~90% of the time this is dropped
+```
+
+Per-level rates:
+
+```ts
+import { createLogger } from '@philiprehberger/logger';
+
+const logger = createLogger({
+  name: 'app',
+  sampling: {
+    trace: 0.01, // 1% of trace
+    debug: 0.1,  // 10% of debug
+    info: 1,     // all info (any unspecified level defaults to 1)
+    warn: 1,
+    error: 1,
+    fatal: 1,
+  },
+});
+```
+
+Default is `1` (no sampling). Child loggers inherit the parent's `sampling` config:
+
+```ts
+const logger = createLogger({ name: 'app', sampling: 0.5 });
+const reqLogger = logger.child({ requestId: 'abc' });
+// reqLogger also samples at 50%
+```
+
 ### Environment Variables
 
 - `LOG_LEVEL` — sets the log level (overrides constructor option, case-insensitive)
@@ -148,15 +189,27 @@ const transport = consoleTransport({
 | `child(bindings)` | Create a child logger with inherited context |
 | `setLevel(level)` | Change log level at runtime |
 
+### `LoggerOptions`
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | `string` | required | Logger name attached to every entry |
+| `level` | `LogLevel` | `'info'` | Minimum level to emit (or `LOG_LEVEL` env var) |
+| `pretty` | `boolean` | `NODE_ENV==='development'` | Pretty-print human-readable output |
+| `redact` | `string[] \| boolean` | `true` | Field patterns to redact, `false` to disable, `true` for defaults |
+| `transports` | `Transport[]` | `[consoleTransport(pretty)]` | Custom output sinks |
+| `sampling` | `number \| Record<LogLevel, number>` | `1` | Sample rate (0–1) globally or per level |
+
 ### Types
 
 | Type | Description |
 |------|-------------|
 | `Logger` | Logger instance interface |
-| `LoggerOptions` | Options: `name`, `level?`, `pretty?`, `redact?`, `transport?` |
+| `LoggerOptions` | Options accepted by `createLogger` |
 | `LogLevel` | `'trace' \| 'debug' \| 'info' \| 'warn' \| 'error' \| 'fatal' \| 'silent'` |
 | `LogEntry` | Shape of a structured log entry |
 | `Transport` | Transport function signature |
+| `SamplingRate` | `number` or per-level `{ trace?, debug?, info?, warn?, error?, fatal? }` map |
 | `ConsoleTransportOptions` | Options for `consoleTransport` |
 
 ## Development

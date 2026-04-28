@@ -357,3 +357,204 @@ describe('consoleTransport', () => {
     assert.equal(typeof transport, 'function');
   });
 });
+
+describe('Sampling', () => {
+  const originalRandom = Math.random;
+
+  afterEach(() => {
+    Math.random = originalRandom;
+  });
+
+  it('defaults to no sampling (rate 1) when option is omitted', () => {
+    Math.random = () => 0.999999;
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    for (let i = 0; i < 50; i++) logger.info(`msg-${i}`);
+
+    assert.equal(entries.length, 50);
+  });
+
+  it('drops all log calls when global rate is 0', () => {
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 0,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    for (let i = 0; i < 100; i++) logger.info(`msg-${i}`);
+
+    assert.equal(entries.length, 0);
+  });
+
+  it('emits all log calls when global rate is 1', () => {
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 1,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    for (let i = 0; i < 100; i++) logger.info(`msg-${i}`);
+
+    assert.equal(entries.length, 100);
+  });
+
+  it('gates a call when Math.random() >= rate (deterministic stub)', () => {
+    Math.random = () => 0.6; // 0.6 >= 0.5 → gated
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 0.5,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    logger.info('should be dropped');
+    assert.equal(entries.length, 0);
+  });
+
+  it('emits a call when Math.random() < rate (deterministic stub)', () => {
+    Math.random = () => 0.1; // 0.1 < 0.5 → kept
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 0.5,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    logger.info('should be kept');
+    assert.equal(entries.length, 1);
+  });
+
+  it('approximates the configured global rate over a large sample', () => {
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 0.25,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    const N = 5000;
+    for (let i = 0; i < N; i++) logger.info(`msg-${i}`);
+
+    const ratio = entries.length / N;
+    // 0.25 expected; allow ±0.05 tolerance for randomness
+    assert.ok(Math.abs(ratio - 0.25) < 0.05, `expected ~0.25, got ${ratio}`);
+  });
+
+  it('supports per-level sampling rates', () => {
+    Math.random = () => 0.5;
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'trace',
+      sampling: { trace: 0, debug: 0, info: 1, warn: 1, error: 1, fatal: 1 },
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    logger.trace('t');
+    logger.debug('d');
+    logger.info('i');
+    logger.warn('w');
+    logger.error('e');
+    logger.fatal('f');
+
+    assert.deepEqual(entries.map((e) => e.level), ['info', 'warn', 'error', 'fatal']);
+  });
+
+  it('treats unspecified levels in per-level map as rate 1', () => {
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: { debug: 0 }, // info/warn/error/fatal default to 1
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    logger.info('i');
+    logger.warn('w');
+    logger.error('e');
+
+    assert.equal(entries.length, 3);
+  });
+
+  it('children inherit sampling from parent', () => {
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 0,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    const child = logger.child({ requestId: 'abc' });
+    const grandchild = child.child({ component: 'db' });
+
+    child.info('child');
+    grandchild.info('grandchild');
+
+    assert.equal(entries.length, 0);
+  });
+
+  it('children inherit per-level sampling map from parent', () => {
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'trace',
+      sampling: { debug: 0, info: 1 },
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    const child = logger.child({ requestId: 'abc' });
+    child.debug('hidden');
+    child.info('shown');
+
+    assert.equal(entries.length, 1);
+    assert.equal(entries[0].level, 'info');
+    assert.equal(entries[0].requestId, 'abc');
+  });
+
+  it('does not invoke Math.random when rate is 1', () => {
+    let calls = 0;
+    Math.random = () => { calls++; return 0; };
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 1,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    logger.info('hello');
+
+    assert.equal(calls, 0);
+    assert.equal(entries.length, 1);
+  });
+
+  it('does not invoke Math.random when rate is 0', () => {
+    let calls = 0;
+    Math.random = () => { calls++; return 0; };
+    const entries = [];
+    const logger = createLogger({
+      name: 'test',
+      level: 'info',
+      sampling: 0,
+      transports: [(entry) => entries.push(entry)],
+    });
+
+    logger.info('hello');
+
+    assert.equal(calls, 0);
+    assert.equal(entries.length, 0);
+  });
+});

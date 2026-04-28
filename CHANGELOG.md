@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (2026-04-27)
+- Add `sampling` option (number or per-level rate map) to reduce log volume
+- Children inherit sampling config from parent loggers
+
 ## 0.3.5
 
 - Standardize README to 3-badge format with emoji Support section
